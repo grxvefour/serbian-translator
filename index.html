@@ -32,27 +32,25 @@ body{display:grid;place-items:start center;padding:30px 0 20px;overflow-x:hidden
 .bottom{height:133px;position:relative;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between; padding: 13px 10px 4px 10px;}.switch{position:relative;left:auto;top:auto;width:61px;height:116px;border:0;border-radius:31px;background:rgba(255,255,255,.09);cursor:pointer;flex:0 0 61px}.knob{position:absolute;left:4px;top:4px;width:53px;height:61px;border-radius:27px;background:radial-gradient(circle at 40% 25%,#8f7aae,#504565 63%,#2c2734 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16);transition:transform .35s cubic-bezier(.2,.8,.2,1)}.switch.swapped .knob{transform:translateY(47px)}.lang{position:absolute;left:0;width:100%;z-index:2;font-size:12px;font-weight:800;color:#fff}.lang.a{top:26px}.lang.b{bottom:24px;color:#d6d3d8}.switch.swapped .lang.a{color:#d6d3d8}.switch.swapped .lang.b{color:#fff}
 
 .mic{
-position: relative;
-    left: auto;
-    top: auto;
-    transform: none;
-    width: 116px;
-    height: 116px;
-    flex: 0 0 116px;
-    border-radius: 50%;
-    border: 0px solid transparent;
-    /* background: linear-gradient(rgba(1, 0, 0, .17), rgba(1, 0, 0, .17)) padding-box, linear-gradient(90deg, rgba(255, 255, 255, .30) 0%, rgba(204, 204, 204, 0) 50%, rgba(255, 255, 255, .30) 100%) border-box; */
-    box-shadow: inset 0 4px 10px rgba(255, 255, 255, .25), inset 0 -10px 26px -19px rgba(255, 255, 255, 1), inset 0 -21px 26px -16px rgba(184, 138, 71, 1), inset 0 -36px 16px -16px rgba(98, 66, 163, 1), 0 0 0 1px rgba(255, 255, 255, .06);
-    display: grid;
-    place-items: center;
-    color: #e6e3e8;
-    cursor: pointer;
-    overflow: hidden;
-    isolation: isolate;
-transition:transform 90ms ease-out;
-will-change:transform;
+position:relative;left:auto;top:auto;transform:none;width:116px;height:116px;flex:0 0 116px;
+border-radius:50%;border:2px solid transparent;
+background:linear-gradient(#111011,#111011) padding-box,
+linear-gradient(90deg,rgba(255,255,255,.30) 0%,rgba(204,204,204,0) 50%,rgba(255,255,255,.30) 100%) border-box;
+display:grid;place-items:center;color:#e6e3e8;cursor:pointer;overflow:hidden;isolation:isolate;
+-webkit-appearance:none;appearance:none;padding:0;
+transition:transform .28s cubic-bezier(.2,.75,.25,1),filter .35s ease;
+transform-origin:center center;will-change:transform;
 }
-.mic::before{
+.mic-surface{position:absolute;inset:0;border-radius:50%;z-index:0;pointer-events:none;
+background:
+radial-gradient(ellipse 95% 48% at 50% 111%,rgba(98,66,163,.82) 0%,rgba(98,66,163,.34) 42%,transparent 72%),
+radial-gradient(ellipse 92% 38% at 50% 104%,rgba(184,138,71,.52) 0%,rgba(184,138,71,.18) 43%,transparent 72%),
+radial-gradient(ellipse 95% 32% at 50% 96%,rgba(255,255,255,.34) 0%,rgba(255,255,255,.10) 45%,transparent 74%),
+radial-gradient(circle at 50% -4%,rgba(255,255,255,.17),transparent 43%),
+linear-gradient(180deg,#171617 0%,#111011 58%,#17141a 100%);}
+.mic-surface::after{content:"";position:absolute;inset:1px;border-radius:50%;
+border-top:1px solid rgba(255,255,255,.20);border-bottom:1px solid rgba(255,255,255,.08);pointer-events:none;}
+.mic::before{display:none;
     content: "";
     position: absolute;
     inset: 0;
@@ -60,7 +58,7 @@ will-change:transform;
     pointer-events: none;
     z-index: 1;
 }
-.mic::after{
+.mic::after{display:none;
     content: "";
     position: absolute;
     inset: 0px;
@@ -125,18 +123,8 @@ animation:micGlow 2.4s ease-in-out infinite alternate,micBreath 1.8s cubic-bezie
 @keyframes waveRise2{from{bottom:-60%}to{bottom:-38%}}
 @keyframes waveRise3{from{bottom:-62%}to{bottom:-42%}}
 @keyframes micGlow{
-from{filter:brightness(1);box-shadow:
-inset 0 4px 54px rgba(255,255,255,.25),
-inset 0 -10px 26px -19px rgba(255,255,255,1),
-inset 0 -21px 26px -16px rgba(184,138,71,1),
-inset 0 -36px 26px -16px rgba(98,66,163,1),
-0 0 10px rgba(132,96,188,.15)}
-to{filter:brightness(1.08);box-shadow:
-inset 0 4px 54px rgba(255,255,255,.30),
-inset 0 -10px 26px -19px rgba(255,255,255,1),
-inset 0 -21px 30px -15px rgba(184,138,71,.95),
-inset 0 -36px 32px -15px rgba(98,66,163,1),
-0 0 26px rgba(132,96,188,.42)}
+from{filter:brightness(1)}
+to{filter:brightness(1.07)}
 }
 .clear{position:relative;right:auto;top:auto;width:45px;height:45px;flex:0 0 45px;border-radius:50%;border:0;background:#202020;color:#666;font-size:29px;font-weight:200;line-height:1;cursor:pointer}.dev{    height: 11px;
     text-align: center;
@@ -148,6 +136,17 @@ inset 0 -36px 32px -15px rgba(98,66,163,1),
     margin-top: 10px;}
 .menu{position:fixed;z-index:99;min-width:170px;max-width:260px;padding:7px;border-radius:14px;background:rgba(36,34,39,.97);border:1px solid rgba(255,255,255,.16);box-shadow:0 12px 35px rgba(0,0,0,.45);display:none}.menu.show{display:block}.menu button{display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:10px 12px;border-radius:9px;font:500 15px inherit}.menu button:hover{background:rgba(255,255,255,.09)}.toast{position:absolute;left:50%;bottom:142px;transform:translateX(-50%) translateY(8px);background:#2a282c;border:1px solid rgba(255,255,255,.12);padding:8px 12px;border-radius:20px;color:#c9c4ce;font-size:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:430px){body{padding:0}.phone{width:100vw;height:100dvh;border-radius:0;min-height:640px}.source,.target{border-radius:24px}.bottom{height:130px}}
+
+@supports(height:100svh){@media(max-width:430px){.phone{height:100svh}}}
+.target{cursor:zoom-in}
+.target.expanded{position:fixed;z-index:500;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;
+border-radius:0;padding:calc(22px + env(safe-area-inset-top)) 22px calc(92px + env(safe-area-inset-bottom));
+background:radial-gradient(300px 420px at -5% 50%,rgba(91,54,145,.30),transparent 72%),
+radial-gradient(320px 420px at 105% 65%,rgba(86,58,139,.34),transparent 72%),#0b0b0b;cursor:zoom-out}
+.target.expanded .result{height:calc(100% - 34px);font-size:24px;line-height:1.48;padding-right:12px}
+.target.expanded .actions{left:18px;right:18px;bottom:calc(16px + env(safe-area-inset-bottom))}
+body.target-open{overflow:hidden;touch-action:none}
+
 </style>
 </head><body>
 <main class="phone" id="app">
@@ -175,9 +174,9 @@ inset 0 -36px 32px -15px rgba(98,66,163,1),
 </header>
 <section class="cards">
   <div class="card source" id="sourceCard"><div class="label" id="sourceLabel"></div><textarea id="input" spellcheck="true" autocomplete="off" placeholder="Напишите фразу"></textarea></div>
-  <div class="card target"><div class="label" id="targetLabel"></div><div class="result empty" id="result">Здесь появится перевод...</div><div class="actions"><button class="speak" id="speak" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>Прослушать</button><button class="copy" id="copy" disabled aria-label="Копировать"><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M15 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1"/></svg></button></div></div>
+  <div class="card target" id="targetCard"><div class="label" id="targetLabel"></div><div class="result empty" id="result">Здесь появится перевод...</div><div class="actions"><button class="speak" id="speak" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>Прослушать</button><button class="copy" id="copy" disabled aria-label="Копировать"><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M15 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1"/></svg></button></div></div>
 </section>
-<div class="bottom"><button class="switch" id="swap" aria-label="Поменять языки"><span class="knob"></span><span class="lang a">RU</span><span class="lang b">RS</span></button><button class="mic" id="mic" aria-label="Голосовой ввод"><span class="mic-wave wave-1"></span><span class="mic-wave wave-2"></span><span class="mic-wave wave-3"></span><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8"/></svg></button><button class="clear" id="clear" aria-label="Очистить">×</button></div>
+<div class="bottom"><button class="switch" id="swap" aria-label="Поменять языки"><span class="knob"></span><span class="lang a">RU</span><span class="lang b">RS</span></button><button class="mic" id="mic" aria-label="Голосовой ввод"><span class="mic-surface"></span><span class="mic-wave wave-1"></span><span class="mic-wave wave-2"></span><span class="mic-wave wave-3"></span><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8"/></svg></button><button class="clear" id="clear" aria-label="Очистить">×</button></div>
 <div class="dev">DEVELOPER - SERGEY KROKHMAL</div><div class="toast" id="toast"></div>
 </main><div class="menu" id="menu"></div>
 <script>
@@ -196,7 +195,26 @@ input.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(perform
 function swapNow(){const oldSource=input.value.trim(),oldTarget=translated.trim();direction=direction==='ru-sr'?'sr-ru':'ru-sr';swap.classList.toggle('swapped',direction==='sr-ru');labels();closeMenu();if(oldTarget){input.value=oldTarget;translated='';perform()}else if(oldSource)perform()}
 swap.addEventListener('click',swapNow);clear.addEventListener('click',()=>{if(controller)controller.abort();seq++;input.value='';translated='';result.textContent='Здесь появится перевод...';result.className='result empty';sourceCard.classList.remove('hastext');speak.disabled=copy.disabled=true;window.speechSynthesis?.cancel();closeMenu();input.focus()});
 copy.addEventListener('click',async()=>{if(!translated)return;await navigator.clipboard.writeText(translated);toast('Скопировано')});
-let currentAudio=null;function browserSpeak(text,lang){if(!('speechSynthesis' in window))return false;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang==='sr'?'sr-RS':'ru-RU';u.rate=.95;const voices=window.speechSynthesis.getVoices();const prefix=lang==='sr'?'sr':'ru';const v=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(prefix));if(v)u.voice=v;window.speechSynthesis.speak(u);return true}function speakText(text,lang,onBoundary){if(!text)return;if(currentAudio){currentAudio.pause();currentAudio=null}window.speechSynthesis?.cancel();const tl=lang==='sr'?'sr':'ru';const url='https://translate.google.com/translate_tts?ie=UTF-8&tl='+tl+'&client=tw-ob&q='+encodeURIComponent(text);const audio=new Audio(url);currentAudio=audio;audio.playbackRate=.95;audio.addEventListener('ended',()=>{if(currentAudio===audio)currentAudio=null},{once:true});audio.play().catch(()=>{if(currentAudio===audio)currentAudio=null;if(!browserSpeak(text,lang))toast('Ошибка воспроизведения')})}
+let currentAudio=null,lastAudioAt=0;
+function browserSpeak(text,lang){
+if(!('speechSynthesis' in window))return false;
+window.speechSynthesis.cancel();
+const u=new SpeechSynthesisUtterance(text);u.lang=lang==='sr'?'sr-RS':'ru-RU';u.rate=.95;
+const voices=window.speechSynthesis.getVoices(),prefix=lang==='sr'?'sr':'ru';
+const v=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(prefix));if(v)u.voice=v;
+window.speechSynthesis.speak(u);return true}
+function googleTtsUrl(text,lang){
+const tl=lang==='sr'?'sr':'ru';
+return 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl='+tl+'&q='+encodeURIComponent(text)+'&_='+Date.now()}
+function speakText(text,lang){
+if(!text)return;
+if(currentAudio){try{currentAudio.pause();currentAudio.removeAttribute('src');currentAudio.load()}catch{}currentAudio=null}
+window.speechSynthesis?.cancel();
+const audio=new Audio();currentAudio=audio;audio.preload='auto';audio.playsInline=true;audio.src=googleTtsUrl(text,lang);audio.playbackRate=.95;
+const done=()=>{lastAudioAt=Date.now();if(currentAudio===audio)currentAudio=null};
+audio.addEventListener('ended',done,{once:true});
+audio.addEventListener('error',()=>{done();if(!browserSpeak(text,lang))toast('Ошибка воспроизведения')},{once:true});
+const p=audio.play();if(p?.catch)p.catch(()=>{done();if(!browserSpeak(text,lang))toast('Ошибка воспроизведения')})}
 speak.addEventListener('click',()=>{const [,to]=langs();speakText(translated,to)});
 function bindWords(){result.querySelectorAll('.word').forEach(w=>{let sx=0,sy=0,longPressed=false;w.addEventListener('click',e=>{if(longPressed){e.preventDefault();longPressed=false;return}playWord(w)});w.addEventListener('contextmenu',e=>{e.preventDefault();showAlternatives(w,e.clientX,e.clientY)});w.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;clearTimeout(pressTimer);pressTimer=setTimeout(()=>{longPressed=true;showAlternatives(w,sx,sy)},450)});w.addEventListener('pointerup',()=>clearTimeout(pressTimer));w.addEventListener('pointercancel',()=>clearTimeout(pressTimer));w.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-sx,e.clientY-sy)>9)clearTimeout(pressTimer)})})}
 async function playWord(w){closeMenu();result.querySelectorAll('.word').forEach(x=>x.classList.remove('active'));w.classList.add('active');const [,to]=langs();speakText(w.textContent.replace(/[.,!?;:]+$/,''),to);await underlineSourceFor(w);setTimeout(()=>w.classList.remove('active'),650)}
@@ -257,105 +275,44 @@ cachedRate();
 rate();
 setInterval(rate,30*60*1000);
 function stopVoiceReactive(){}
-
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(SR){
-  recognition=new SR();
-  recognition.interimResults=true;
-  recognition.continuous=false;
-  recognition.maxAlternatives=5;
+let recognitionLang='',srFallbackIndex=0,recognitionStarting=false;
+const SR_IOS_LANGS=['sr-RS','sr-Latn-RS','hr-HR'];
+const SR_LATIN=/[čćžšđ]/i,SR_CYRILLIC=/[ђјљњћџчћжш]/i;
+const ENGLISH_HINT=/\b(the|a|an|and|or|is|are|was|were|this|that|take|off|pass|you|your|we|they|to|of|in|on|for|with|my|me|it)\b/gi;
+const SERBIAN_HINT=/\b(ja|ti|on|ona|mi|vi|oni|sam|si|je|smo|ste|su|nije|ne|da|šta|sto|kako|gde|gdje|ovo|to|taj|ta|pas|psa|dobar|dobra|dobro|imam|ima|hoću|hocu|mogu|može|moze|treba|zdravo|hvala|molim|samo|sad|sada)\b/gi;
+function serbianScore(text,confidence=0){let score=(Number(confidence)||0)*2;
+score+=(text.match(new RegExp(SR_LATIN.source,'gi'))||[]).length*2.5;
+score+=(text.match(new RegExp(SR_CYRILLIC.source,'gi'))||[]).length*2.5;
+score+=(text.match(SERBIAN_HINT)||[]).length*1.7;score-=(text.match(ENGLISH_HINT)||[]).length*2.2;return score}
+function bestRecognitionAlternative(rs,isSerbian){const c=[];for(let j=0;j<rs.length;j++)c.push({text:(rs[j].transcript||'').trim(),confidence:rs[j].confidence||0});
+if(!c.length)return '';if(!isSerbian)return c[0].text;c.sort((a,b)=>serbianScore(b.text,b.confidence)-serbianScore(a.text,a.confidence));return c[0].text}
+function makeRecognition(){
+if(!SR)return null;const r=new SR();r.interimResults=true;r.continuous=false;r.maxAlternatives=5;
+r.onstart=()=>{recognitionStarting=false;mic.classList.add('listening')};
+r.onend=()=>{recognitionStarting=false;mic.classList.remove('listening');stopVoiceReactive()};
+r.onresult=e=>{const isSerbian=langs()[0]==='sr';let t='';for(let i=0;i<e.results.length;i++){const p=bestRecognitionAlternative(e.results[i],isSerbian);if(p)t+=(t?' ':'')+p}
+input.value=t;sourceCard.classList.add('hastext');clearTimeout(timer);timer=setTimeout(perform,100)};
+r.onerror=e=>{recognitionStarting=false;mic.classList.remove('listening');stopVoiceReactive();
+if(langs()[0]==='sr'&&(e.error==='language-not-supported'||e.error==='service-not-allowed')&&srFallbackIndex<SR_IOS_LANGS.length-1){srFallbackIndex++;setTimeout(()=>startRecognition(true),220);return}
+if(e.error==='no-speech'||e.error==='aborted')return;
+if(e.error==='not-allowed'||e.error==='service-not-allowed'){toast('Safari не дал доступ к распознаванию речи');return}
+if(e.error==='audio-capture'){toast('Микрофон недоступен');return}toast('Не удалось распознать речь')};return r}
+recognition=makeRecognition();
+async function primeMicrophone(){if(!navigator.mediaDevices?.getUserMedia)return;try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});stream.getTracks().forEach(t=>t.stop())}catch{}}
+async function startRecognition(isFallback=false){
+if(!SR)return toast('Голосовой ввод не поддерживается');if(recognitionStarting)return;
+const sourceLang=langs()[0];if(!isFallback)srFallbackIndex=0;
+if(currentAudio){try{currentAudio.pause();currentAudio.removeAttribute('src');currentAudio.load()}catch{}currentAudio=null;lastAudioAt=Date.now()}
+window.speechSynthesis?.cancel();await primeMicrophone();
+try{recognition?.abort()}catch{}recognition=makeRecognition();if(!recognition)return;
+recognitionLang=sourceLang==='sr'?SR_IOS_LANGS[srFallbackIndex]:'ru-RU';recognition.lang=recognitionLang;
+const sinceAudio=Date.now()-lastAudioAt;if(sinceAudio<500)await new Promise(r=>setTimeout(r,500-sinceAudio));
+recognitionStarting=true;mic.classList.add('listening');try{recognition.start()}catch(e){recognitionStarting=false;mic.classList.remove('listening');if(e?.name!=='InvalidStateError')toast('Не удалось запустить запись')}}
+mic.addEventListener('click',()=>startRecognition(false));
 
-  recognition.onstart=()=>{
-    mic.classList.add('listening');
-  };
+const targetCard=$('#targetCard');
+function toggleTargetFullscreen(){const open=targetCard.classList.toggle('expanded');document.body.classList.toggle('target-open',open);if(open)result.scrollTop=0}
+targetCard.addEventListener('click',e=>{if(e.target.closest('.word,.actions,button,svg,path'))return;toggleTargetFullscreen()});
 
-  recognition.onend=()=>{
-    mic.classList.remove('listening');
-    stopVoiceReactive();
-  };
-
-  const SR_LATIN=/[čćžšđ]/i;
-  const SR_CYRILLIC=/[ђјљњћџчћжш]/i;
-  const ENGLISH_HINT=/\b(the|a|an|and|or|is|are|was|were|this|that|take|off|pass|you|your|we|they|to|of|in|on|for|with|my|me|it)\b/gi;
-  const SERBIAN_HINT=/\b(ja|ti|on|ona|mi|vi|oni|sam|si|je|smo|ste|su|nije|ne|da|šta|sto|kako|gde|gdje|ovo|to|taj|ta|pas|psa|dobar|dobra|dobro|imam|ima|hoću|hocu|mogu|može|moze|treba|zdravo|hvala|molim|samo|sad|sada)\b/gi;
-
-  function serbianScore(text,confidence=0){
-    let score=(Number(confidence)||0)*2;
-    const srLetters=(text.match(new RegExp(SR_LATIN.source,'gi'))||[]).length;
-    const srCyr=(text.match(new RegExp(SR_CYRILLIC.source,'gi'))||[]).length;
-    const srWords=(text.match(SERBIAN_HINT)||[]).length;
-    const enWords=(text.match(ENGLISH_HINT)||[]).length;
-    score+=srLetters*2.5+srCyr*2.5+srWords*1.7-enWords*2.2;
-    return score;
-  }
-
-  function bestRecognitionAlternative(resultSet,isSerbian){
-    const candidates=[];
-    for(let j=0;j<resultSet.length;j++){
-      const alt=resultSet[j];
-      candidates.push({
-        text:(alt.transcript||'').trim(),
-        confidence:alt.confidence||0
-      });
-    }
-    if(!candidates.length)return '';
-    if(!isSerbian)return candidates[0].text;
-
-    candidates.sort((a,b)=>
-      serbianScore(b.text,b.confidence)-serbianScore(a.text,a.confidence)
-    );
-    return candidates[0].text;
-  }
-
-  recognition.onresult=e=>{
-    const isSerbian=langs()[0]==='sr';
-    let t='';
-    for(let i=0;i<e.results.length;i++){
-      const piece=bestRecognitionAlternative(e.results[i],isSerbian);
-      if(piece)t+=(t?' ':'')+piece;
-    }
-    input.value=t;
-    sourceCard.classList.add('hastext');
-    clearTimeout(timer);
-    timer=setTimeout(perform,100);
-  };
-
-  recognition.onerror=e=>{
-    mic.classList.remove('listening');
-    stopVoiceReactive();
-
-    if(e.error==='no-speech'||e.error==='aborted')return;
-    if(e.error==='not-allowed'||e.error==='service-not-allowed'){
-      toast('Разрешите доступ к микрофону');
-      return;
-    }
-    if(e.error==='audio-capture'){
-      toast('Микрофон недоступен');
-      return;
-    }
-    toast('Не удалось распознать речь');
-  };
-}else{
-  mic.style.opacity=.45;
-}
-
-mic.addEventListener('click',()=>{
-  if(!recognition)return toast('Голосовой ввод не поддерживается');
-
-  const sourceLang=langs()[0];
-  recognition.lang=sourceLang==='sr'?'sr-RS':'ru-RU';
-
-  // Show recording feedback immediately. Google still decides when to stop.
-  mic.classList.add('listening');
-
-  try{
-    recognition.start();
-  }catch(e){
-    // If recognition is already active, keep the current session.
-    if(e?.name!=='InvalidStateError'){
-      mic.classList.remove('listening');
-      toast('Не удалось запустить запись');
-    }
-  }
-});
 </script></body></html>
