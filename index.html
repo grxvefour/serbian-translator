@@ -139,10 +139,21 @@ to{filter:brightness(1.07)}
 
 @supports(height:100svh){@media(max-width:430px){.phone{height:100svh}}}
 .target{cursor:zoom-in}
-.target.expanded{position:fixed;z-index:500;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;
-border-radius:0;padding:calc(22px + env(safe-area-inset-top)) 22px calc(92px + env(safe-area-inset-bottom));
-background:radial-gradient(300px 420px at -5% 50%,rgba(91,54,145,.30),transparent 72%),
-radial-gradient(320px 420px at 105% 65%,rgba(86,58,139,.34),transparent 72%),#0b0b0b;cursor:zoom-out}
+.target.expanded{    position: fixed;
+    z-index: 500;
+    inset: 0;
+    width: calc(100vw - 20px);
+    height: calc(100dvh - 20px);
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    padding: calc(22px + env(safe-area-inset-top)) 22px calc(92px + env(safe-area-inset-bottom));
+    background: radial-gradient(300px 420px at -5% 50%, rgba(91, 54, 145, .30), transparent 72%), radial-gradient(320px 420px at 105% 65%, rgba(86, 58, 139, .34), transparent 72%), #0b0b0b;
+    cursor: zoom-out;
+    border-radius: 40px;
+    margin: 10px 10px;
+    transition: 0.5s;
+}
 .target.expanded .result{height:calc(100% - 34px);font-size:24px;line-height:1.48;padding-right:12px}
 .target.expanded .actions{left:18px;right:18px;bottom:calc(16px + env(safe-area-inset-bottom))}
 body.target-open{overflow:hidden;touch-action:none}
@@ -176,7 +187,7 @@ body.target-open{overflow:hidden;touch-action:none}
   <div class="card source" id="sourceCard"><div class="label" id="sourceLabel"></div><textarea id="input" spellcheck="true" autocomplete="off" placeholder="Напишите фразу"></textarea></div>
   <div class="card target" id="targetCard"><div class="label" id="targetLabel"></div><div class="result empty" id="result">Здесь появится перевод...</div><div class="actions"><button class="speak" id="speak" disabled><svg class="icon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>Прослушать</button><button class="copy" id="copy" disabled aria-label="Копировать"><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="10" height="10" rx="2"/><path d="M15 6V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h1"/></svg></button></div></div>
 </section>
-<div class="bottom"><button class="switch" id="swap" aria-label="Поменять языки"><span class="knob"></span><span class="lang a">RU</span><span class="lang b">RS</span></button><button class="mic" id="mic" aria-label="Голосовой ввод"><span class="mic-surface"></span><span class="mic-wave wave-1"></span><span class="mic-wave wave-2"></span><span class="mic-wave wave-3"></span><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8"/></svg></button><button class="clear" id="clear" aria-label="Очистить">×</button></div>
+<div class="bottom"><button class="switch" id="swap" aria-label="Поменять языки"><span class="knob"></span><span class="lang a">RU</span><span class="lang b">RS</span></button><button class="mic" id="mic" aria-label="Голосовой ввод"><span class="mic-surface"></span><span class="mic-wave wave-1"></span><span class="mic-wave wave-2"></span><span class="mic-wave wave-3"></span><svg class="icon" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8"/></svg></button><button type="button" class="clear" id="clear" aria-label="Очистить">×</button></div>
 <div class="dev">DEVELOPER - SERGEY KROKHMAL</div><div class="toast" id="toast"></div>
 </main><div class="menu" id="menu"></div>
 <script>
@@ -193,33 +204,152 @@ function renderText(t){translated=t;const parts=t.split(/(\s+)/);let wi=0;result
 async function perform(){const text=input.value.trim(), my=++seq;if(controller)controller.abort();controller=new AbortController();sourceCard.classList.toggle('hastext',!!text);if(!text){translated='';result.textContent='Здесь появится перевод...';result.className='result empty';speak.disabled=copy.disabled=true;return}try{const [from,to]=langs(),r=await translate(text,from,to,controller.signal);if(my!==seq)return;if(r.text)renderText(r.text)}catch(e){if(e.name!=='AbortError')toast('Ошибка перевода')}}
 input.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(perform,180)});
 function swapNow(){const oldSource=input.value.trim(),oldTarget=translated.trim();direction=direction==='ru-sr'?'sr-ru':'ru-sr';swap.classList.toggle('swapped',direction==='sr-ru');labels();closeMenu();if(oldTarget){input.value=oldTarget;translated='';perform()}else if(oldSource)perform()}
-swap.addEventListener('click',swapNow);clear.addEventListener('click',()=>{if(controller)controller.abort();seq++;input.value='';translated='';result.textContent='Здесь появится перевод...';result.className='result empty';sourceCard.classList.remove('hastext');speak.disabled=copy.disabled=true;window.speechSynthesis?.cancel();closeMenu();input.focus()});
+swap.addEventListener('click',swapNow);clear.addEventListener('click',e=>{
+ e.preventDefault();e.stopPropagation();
+ if(controller)controller.abort();seq++;
+ input.value='';translated='';
+ result.textContent='Здесь появится перевод...';result.className='result empty';
+ sourceCard.classList.remove('hastext');speak.disabled=copy.disabled=true;
+ closeMenu();
+ input.blur();
+});
 copy.addEventListener('click',async()=>{if(!translated)return;await navigator.clipboard.writeText(translated);toast('Скопировано')});
 let currentAudio=null,lastAudioAt=0;
-function browserSpeak(text,lang){
-if(!('speechSynthesis' in window))return false;
-window.speechSynthesis.cancel();
-const u=new SpeechSynthesisUtterance(text);u.lang=lang==='sr'?'sr-RS':'ru-RU';u.rate=.95;
-const voices=window.speechSynthesis.getVoices(),prefix=lang==='sr'?'sr':'ru';
-const v=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(prefix));if(v)u.voice=v;
-window.speechSynthesis.speak(u);return true}
 function googleTtsUrl(text,lang){
-const tl=lang==='sr'?'sr':'ru';
-return 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl='+tl+'&q='+encodeURIComponent(text)+'&_='+Date.now()}
+ const tl=lang==='sr'?'sr':'ru';
+ return 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl='+encodeURIComponent(tl)+'&q='+encodeURIComponent(text)+'&_='+Date.now();
+}
 function speakText(text,lang){
-if(!text)return;
-if(currentAudio){try{currentAudio.pause();currentAudio.removeAttribute('src');currentAudio.load()}catch{}currentAudio=null}
-window.speechSynthesis?.cancel();
-const audio=new Audio();currentAudio=audio;audio.preload='auto';audio.playsInline=true;audio.src=googleTtsUrl(text,lang);audio.playbackRate=.95;
-const done=()=>{lastAudioAt=Date.now();if(currentAudio===audio)currentAudio=null};
-audio.addEventListener('ended',done,{once:true});
-audio.addEventListener('error',()=>{done();if(!browserSpeak(text,lang))toast('Ошибка воспроизведения')},{once:true});
-const p=audio.play();if(p?.catch)p.catch(()=>{done();if(!browserSpeak(text,lang))toast('Ошибка воспроизведения')})}
+ if(!text)return;
+ if(currentAudio){try{currentAudio.pause();currentAudio.removeAttribute('src');currentAudio.load()}catch{}currentAudio=null}
+ const audio=new Audio();
+ currentAudio=audio;audio.preload='auto';audio.playsInline=true;
+ audio.src=googleTtsUrl(text,lang);audio.playbackRate=.95;
+ const done=()=>{lastAudioAt=Date.now();if(currentAudio===audio)currentAudio=null};
+ audio.addEventListener('ended',done,{once:true});
+ audio.addEventListener('error',()=>{done();toast('Google-озвучка недоступна')},{once:true});
+ const p=audio.play();
+ if(p?.catch)p.catch(()=>{done();toast('Google-озвучка недоступна')});
+}
 speak.addEventListener('click',()=>{const [,to]=langs();speakText(translated,to)});
 function bindWords(){result.querySelectorAll('.word').forEach(w=>{let sx=0,sy=0,longPressed=false;w.addEventListener('click',e=>{if(longPressed){e.preventDefault();longPressed=false;return}playWord(w)});w.addEventListener('contextmenu',e=>{e.preventDefault();showAlternatives(w,e.clientX,e.clientY)});w.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;clearTimeout(pressTimer);pressTimer=setTimeout(()=>{longPressed=true;showAlternatives(w,sx,sy)},450)});w.addEventListener('pointerup',()=>clearTimeout(pressTimer));w.addEventListener('pointercancel',()=>clearTimeout(pressTimer));w.addEventListener('pointermove',e=>{if(Math.hypot(e.clientX-sx,e.clientY-sy)>9)clearTimeout(pressTimer)})})}
 async function playWord(w){closeMenu();result.querySelectorAll('.word').forEach(x=>x.classList.remove('active'));w.classList.add('active');const [,to]=langs();speakText(w.textContent.replace(/[.,!?;:]+$/,''),to);await underlineSourceFor(w);setTimeout(()=>w.classList.remove('active'),650)}
 async function underlineSourceFor(w){const src=input.value.trim();if(!src)return;const srcWords=src.split(/(\s+)/), tgtWords=[...result.querySelectorAll('.word')], idx=tgtWords.indexOf(w);const plain=src.split(/\s+/);let pick=plain[Math.min(idx,plain.length-1)]||plain[0];try{const [from,to]=langs();let best=-1;for(const sw of plain){const r=await googleTranslate(sw,from,to,false);const score=r.text.toLowerCase().includes(w.textContent.toLowerCase().replace(/\W/g,''))?1:0;if(score>best){best=score;pick=sw}if(score===1)break}}catch{}const pos=src.indexOf(pick);if(pos>=0){input.focus();input.setSelectionRange(pos,pos+pick.length)}}
-async function showAlternatives(w,x,y){clearTimeout(pressTimer);navigator.vibrate?.(18);result.querySelectorAll('.word').forEach(a=>a.classList.remove('active'));w.classList.add('active');const word=w.textContent.replace(/[.,!?;:]+$/,'');const [from,to]=langs();let opts=[];try{const r=await googleTranslate(word,to,from,true);if(r.text)opts.push(r.text);const collect=o=>{if(Array.isArray(o))o.forEach(collect);else if(typeof o==='string'&&o.length<50&&!/[{}\[\]]/.test(o))opts.push(o)};collect(r.raw?.[1]);collect(r.raw?.[5]);}catch{}try{const src=input.value.trim();if(src){const rr=await googleTranslate(src,from,to,true);const collect=o=>{if(Array.isArray(o))o.forEach(collect);else if(typeof o==='string'&&o.length<50)opts.push(o)};collect(rr.raw?.[5])}}catch{}opts=[...new Set(opts.map(s=>s.trim()).filter(s=>s&&s.toLowerCase()!==word.toLowerCase()))].slice(0,7);if(!opts.length)opts=['Нет дополнительных вариантов'];menu.innerHTML='<div style="padding:7px 12px 5px;color:#8e8993;font-size:11px">ВАРИАНТЫ ПЕРЕВОДА</div>'+opts.map(o=>`<button type="button">${esc(o)}</button>`).join('');menu.style.left=Math.max(8,Math.min(x,innerWidth-275))+'px';menu.style.top=Math.max(8,Math.min(y+12,innerHeight-300))+'px';menu.classList.add('show');menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.textContent);toast('Вариант скопирован');closeMenu()})}
+async function showAlternatives(w,x,y){
+  clearTimeout(pressTimer);
+  navigator.vibrate?.(18);
+  result.querySelectorAll('.word').forEach(a=>a.classList.remove('active'));
+  w.classList.add('active');
+
+  const word=w.textContent.replace(/[.,!?;:]+$/,'').trim();
+  const [from,to]=langs();
+  let opts=[];
+
+  // IMPORTANT:
+  // The popup must contain alternatives in the SAME language as the clicked
+  // translated word. Example: RU -> SR result => popup contains Serbian.
+  try{
+    // First find the likely source word corresponding to the clicked target word.
+    const back=await googleTranslate(word,to,from,true);
+    const sourceCandidates=[];
+    if(back.text)sourceCandidates.push(back.text);
+
+    const collectSource=o=>{
+      if(Array.isArray(o))o.forEach(collectSource);
+      else if(typeof o==='string' && o.trim().length<60)sourceCandidates.push(o.trim());
+    };
+    collectSource(back.raw?.[1]);
+    collectSource(back.raw?.[5]);
+
+    // Translate those source-language candidates BACK to the target language.
+    // This prevents Russian words from appearing in a Serbian alternatives menu.
+    for(const sourceWord of [...new Set(sourceCandidates)].slice(0,8)){
+      try{
+        const rr=await googleTranslate(sourceWord,from,to,true);
+        if(rr.text)opts.push(rr.text);
+
+        const collectTarget=o=>{
+          if(Array.isArray(o))o.forEach(collectTarget);
+          else if(typeof o==='string' && o.trim().length<60)opts.push(o.trim());
+        };
+        collectTarget(rr.raw?.[1]);
+        collectTarget(rr.raw?.[5]);
+      }catch{}
+    }
+
+    // Also ask Google for alternatives for the whole original sentence,
+    // but keep only target-language-looking entries.
+    const src=input.value.trim();
+    if(src){
+      const whole=await googleTranslate(src,from,to,true);
+      if(whole.text)opts.push(whole.text);
+      const collectWhole=o=>{
+        if(Array.isArray(o))o.forEach(collectWhole);
+        else if(typeof o==='string' && o.trim().length<90)opts.push(o.trim());
+      };
+      collectWhole(whole.raw?.[1]);
+      collectWhole(whole.raw?.[5]);
+    }
+  }catch{}
+
+  const cyrillic=/[\u0400-\u04FF]/;
+  const serbianCyr=/[ђјљњћџ]/i;
+  const russianOnly=/[ёыэъ]/i;
+
+  function targetLanguageScore(s){
+    s=s.trim();
+    if(!s)return -999;
+
+    if(to==='sr'){
+      let score=0;
+      if(/[čćžšđ]/i.test(s))score+=5;
+      if(serbianCyr.test(s))score+=5;
+      if(russianOnly.test(s))score-=8;
+      // Serbian may legitimately be Cyrillic, so don't reject Cyrillic itself.
+      if(/\b(je|nije|da|šta|sto|kako|gde|ovo|to|sam|si|smo|ste|su|košta|koliko|tamo|ovde|zdravo)\b/i.test(s))score+=4;
+      return score;
+    }
+
+    // RU target: favor Russian-specific letters/words.
+    let score=0;
+    if(russianOnly.test(s))score+=5;
+    if(/\b(это|как|где|что|сколько|стоит|там|здесь|привет|она|он|они)\b/i.test(s))score+=3;
+    return score;
+  }
+
+  opts=[...new Set(
+    opts.map(s=>s.replace(/\s+/g,' ').trim())
+        .filter(s=>s && s.toLowerCase()!==word.toLowerCase())
+  )];
+
+  // For Serbian target, remove candidates that strongly look Russian.
+  if(to==='sr'){
+    opts=opts.filter(s=>!russianOnly.test(s));
+  }
+
+  opts.sort((a,b)=>targetLanguageScore(b)-targetLanguageScore(a));
+  opts=opts.slice(0,7);
+
+  if(!opts.length){
+    opts=[to==='sr'?'Нема додатних варијанти':'Нет дополнительных вариантов'];
+  }
+
+  menu.innerHTML=
+    '<div style="padding:7px 12px 5px;color:#8e8993;font-size:11px">'+
+    (to==='sr'?'ВАРИЈАНТЕ ПРЕВОДА':'ВАРИАНТЫ ПЕРЕВОДА')+
+    '</div>'+
+    opts.map(o=>`<button type="button">${esc(o)}</button>`).join('');
+
+  menu.style.left=Math.max(8,Math.min(x,innerWidth-275))+'px';
+  menu.style.top=Math.max(8,Math.min(y+12,innerHeight-300))+'px';
+  menu.classList.add('show');
+
+  menu.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    navigator.clipboard?.writeText(b.textContent);
+    toast('Вариант скопирован');
+    closeMenu();
+  });
+}
 function closeMenu(){menu.classList.remove('show')}document.addEventListener('pointerdown',e=>{if(!menu.contains(e.target)&&!e.target.classList.contains('word'))closeMenu()});
 function tick(){
   const d=new Date();
@@ -304,7 +434,7 @@ async function startRecognition(isFallback=false){
 if(!SR)return toast('Голосовой ввод не поддерживается');if(recognitionStarting)return;
 const sourceLang=langs()[0];if(!isFallback)srFallbackIndex=0;
 if(currentAudio){try{currentAudio.pause();currentAudio.removeAttribute('src');currentAudio.load()}catch{}currentAudio=null;lastAudioAt=Date.now()}
-window.speechSynthesis?.cancel();await primeMicrophone();
+await primeMicrophone();
 try{recognition?.abort()}catch{}recognition=makeRecognition();if(!recognition)return;
 recognitionLang=sourceLang==='sr'?SR_IOS_LANGS[srFallbackIndex]:'ru-RU';recognition.lang=recognitionLang;
 const sinceAudio=Date.now()-lastAudioAt;if(sinceAudio<500)await new Promise(r=>setTimeout(r,500-sinceAudio));
